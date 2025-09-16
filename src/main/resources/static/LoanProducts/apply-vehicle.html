@@ -20,7 +20,7 @@
 
     <!-- jQuery (needed for ajax and $ selector) -->
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
 </head>
 
@@ -64,7 +64,7 @@
 
             <div class="navbar-buttons">
 
-                <a href="../Customer/login.html" class="login-btn">Login/Register</a>
+                <a href="../static/Customer/login.html" class="login-btn">Login/Register</a>
 
             </div>
 
@@ -100,7 +100,7 @@
 
         <form id="loanForm" class="apply-form shadow p-4 rounded bg-white">
 
-            <input type="hidden" id="productId" name="productId">
+            <!--            <input type="hidden" id="productId" name="productId">-->
 
 
 
@@ -129,18 +129,18 @@
             </div>
 
             <div class="mb-3">
-            <!-- The 'for' attribute links the label to the select element -->
-            <label for="loanType" class="form-label">Loan Type</label>
+                <!-- The 'for' attribute links the label to the select element -->
+                <label for="loanType" class="form-label">Loan Type</label>
 
-            <!-- Use a select dropdown to ensure valid loan types are chosen -->
-            <select id="loanType" id="1" class="form-control" required>
-                <option value="" disabled selected>-- Select a loan type --</option>
-                <option value="vehicle">Vehicle Loan</option>
-            </select>
-    </div>
+                <!-- Use a select dropdown to ensure valid loan types are chosen -->
+                <select id="loanType"  class="form-control" required>
+                    <option value="" disabled selected>-- Select a loan type --</option>
+                    <option value="vehicle">Vehicle Loan</option>
+                </select>
+            </div>
 
 
-    <div class="mb-3">
+            <div class="mb-3">
 
                 <label class="form-label">Loan Amount</label>
 
@@ -237,7 +237,6 @@
 
 
 <script>
-    // --- Navbar login/profile logic from customer-form.html ---
     function checkLoginStatus() {
         const email = localStorage.getItem("loggedInEmail");
         if (email) {
@@ -298,40 +297,84 @@
             window.location.href = "../Customer/login.html";
         }
     }
-    // --- End navbar logic ---
-
     $(document).ready(function() {
-        checkLoginStatus();
-        // Handle form submission
-        $('#loanForm').on('submit', function(e) {
-            e.preventDefault();
-            const customer = JSON.parse(localStorage.getItem("loggedInCustomer"));
-            // Collect form data
-            const application = {
-                customerId: customer.customerid,
-                name: $('#customerName').val(),
-                email: $('#email').val(),
-                phone: $('#customerId').val(),
-                loanAmount: parseFloat($('#loanAmount').val()),
-                loanTenure: parseInt($('#loanTenure').val()),
-                productType: "VEHICLE"
-            };
-            // AJAX POST request (adjust endpoint as needed)
-            $.ajax({
-                url: "http://localhost:8089/api/applications/vehicle",
-                method: "POST",
-                contentType: "application/json",
-                data: JSON.stringify(application),
-                success: function() {
-                    alert("Applied successfully! Needs to be approved.");
-                    $('#loanForm')[0].reset();
-                },
-                error: function() {
-                    alert("Failed to apply. Please try again.");
+    checkLoginStatus();
+    let product_name;
+    $('#loanForm').on('submit', function(e) {
+
+        e.preventDefault();
+
+        // Get form values
+        const name = $('#name').val().trim();
+        const email = $('#email').val().trim();
+        const phoneNumber = $('#phoneNumber').val().trim();
+        const loanType = $('#loanType').val();
+        const loanAmount = parseFloat($('#loanAmount').val());
+        const tenure = parseInt($('#tenure').val());
+        const productId = 10; // Vehicle loan product ID
+
+        product_name=loanType;
+        // Validation
+        if (!name || !email || !phoneNumber || !loanType || isNaN(loanAmount) || isNaN(tenure)) {
+            alert("Please fill in all fields correctly.");
+            return;
+        }
+
+        if (loanAmount < 100000 || loanAmount > 2000000) {
+            alert ("Loan amount must be between ₹1,00,000 and ₹20,00,000.");
+            return;
+        }
+
+        if (tenure <= 0 || tenure > 60) {
+            alert ("Tenure must be between 1 and 60 months.");
+            return;
+        }
+
+        // First AJAX call - Get customer ID by email
+        $.ajax({
+            url: '/api/application/getId',
+            type: 'GET',
+            data: { email: email },
+            success: function(customerId) {
+                applyForLoan(customerId, productId, loanAmount, tenure,product_name);
+            },
+            error: function(xhr) {
+                if (xhr.status === 404) {
+                    alert("Customer not found. Please register first.");
+                } else {
+                    alert("Error retrieving customer information. Please try again.");
                 }
-            });
+            }
         });
     });
+
+    // Function to handle loan application
+    function applyForLoan(customerId, productId, loanAmount, tenure,product_name) {
+        $.ajax({
+            url: '/api/application/applyLoan',
+            type: 'POST',
+            data: {
+                customerId: customerId,
+                productId: productId,
+                loanAmount: loanAmount,
+                tenure: tenure,
+                productType: product_name.toUpperCase()
+            },
+            success: function(response) {
+                alert("Loan application submitted successfully!");
+            },
+            error: function(xhr) {
+                alert("Failed to submit loan application. Please try again.");
+            }
+        });
+    }
+});
+
+
+
+
+
+
 
 </script>
 
