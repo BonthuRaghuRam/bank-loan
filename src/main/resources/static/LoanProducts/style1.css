@@ -1,0 +1,40 @@
+/* Admin Add Loan Product */
+.apply-form {
+  max-width: 650px;
+  margin: auto;
+}
+
+.apply-form .form-label {
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+.apply-form input {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.apply-form button {
+  width: 100%;
+  font-size: 18px;
+}
+
+
+/* Admin Loan Product List */
+.table {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.table th {
+  text-align: center;
+}
+
+.table td {
+  text-align: center;
+}
+
+.btn-sm {
+  margin: 0 2px;
+}

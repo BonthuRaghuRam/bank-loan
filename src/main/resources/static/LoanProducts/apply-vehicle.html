@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Apply - Vehicle Loan</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="style.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+
+
+    <!-- jQuery (needed for ajax and $ selector) -->
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+</head>
+
+<body>
+
+
+
+<!--------------------------NAVBAR---------------------------------------------------->
+
+<nav class="navbar navbar-expand-lg sticky-top custom-navbar">
+
+    <div class="container-fluid">
+
+        <!-- Logo + Brand -->
+
+        <a class="navbar-brand d-flex align-items-center" href="#">
+
+            <img class="logo-img" src="../images/logo.jpg" alt="logo">
+
+            <span class="brand-text ms-2">Bank Loan</span>
+
+        </a>
+
+
+
+        <!-- Toggle for mobile -->
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu"
+
+                aria-controls="navbarMenu" aria-expanded="false" aria-label="Toggle navigation">
+
+            <span class="navbar-toggler-icon"></span>
+
+        </button>
+
+
+
+        <!-- Links -->
+
+        <div class="collapse navbar-collapse justify-content-end" id="navbarMenu">
+
+            <div class="navbar-buttons">
+
+                <a href="../Customer/login.html" class="login-btn">Login/Register</a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+
+
+
+<!-- Loan Apply Form -->
+
+<section class="apply-section py-5">
+
+    <div class="container">
+
+        <h2 class="text-center mb-4">Apply for Vehicle Loan</h2>
+
+
+
+        <div class="loan-details mb-4 p-3 bg-light rounded shadow-sm">
+
+            <p><strong>Interest Rate:</strong> 9.25% per annum</p>
+
+            <p><strong>Maximum Tenure:</strong> 60 months</p>
+
+        </div>
+
+
+
+        <form id="loanForm" class="apply-form shadow p-4 rounded bg-white">
+
+            <input type="hidden" id="productId" name="productId">
+
+
+
+            <div class="mb-3">
+
+                <label class="form-label">Full Name</label>
+
+                <input type="text" id="name" class="form-control" placeholder="Enter your full name" required>
+
+            </div>
+
+            <div class="mb-3">
+
+                <label class="form-label">Email Address</label>
+
+                <input type="email" id="email" class="form-control" placeholder="Enter your email" required>
+
+            </div>
+
+            <div class="mb-3">
+
+                <label class="form-label">Phone Number</label>
+
+                <input type="tel" id="phoneNumber" class="form-control" placeholder="Enter your phone number" required>
+
+            </div>
+
+            <div class="mb-3">
+            <!-- The 'for' attribute links the label to the select element -->
+            <label for="loanType" class="form-label">Loan Type</label>
+
+            <!-- Use a select dropdown to ensure valid loan types are chosen -->
+            <select id="loanType" id="1" class="form-control" required>
+                <option value="" disabled selected>-- Select a loan type --</option>
+                <option value="vehicle">Vehicle Loan</option>
+            </select>
+    </div>
+
+
+    <div class="mb-3">
+
+                <label class="form-label">Loan Amount</label>
+
+                <input type="number" id="loanAmount" class="form-control" placeholder="Enter desired loan amount" required>
+
+            </div>
+
+            <div class="mb-3">
+
+                <label class="form-label">Preferred Tenure (Months)</label>
+
+                <input type="number" id="tenure" class="form-control" placeholder="Up to 60 months" required>
+
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Submit Application</button>
+
+        </form>
+
+    </div>
+
+</section>
+
+
+
+<!--------------------------FOOTER---------------------------------------------------->
+
+<footer class="footer">
+
+    <div class="footer-container">
+
+
+
+        <!-- Social Icons -->
+
+        <div class="social-icons">
+
+            <a href="https://facebook.com"><i class="fab fa-facebook-f"></i></a>
+
+            <a href="https://twitter.com"><i class="fab fa-twitter"></i></a>
+
+            <a href="https://instagram.com"><i class="fab fa-instagram"></i></a>
+
+            <a href="https://linkedin.com"><i class="fab fa-linkedin-in"></i></a>
+
+        </div>
+
+
+
+        <!-- About Us -->
+
+        <div class="footer-section">
+
+            <h4>About Us</h4>
+
+            <p>
+
+                We provide secure and efficient loan management services tailored to meet customer needs.
+
+                Our mission is to simplify the loan process and ensure transparency.
+
+            </p>
+
+        </div>
+
+
+
+        <!-- Contact Us -->
+
+        <div class="footer-section">
+
+            <h4>Contact Us</h4>
+
+            <p>Email: support@loanbank.com</p>
+
+            <p>Phone: +91-9876543210</p>
+
+            <p>Address: 123 Finance Street, Chennai, TN</p>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="footer-bottom">
+
+        &copy; 2025 All rights reserved.
+
+    </div>
+
+</footer>
+
+
+
+<script>
+    // --- Navbar login/profile logic from customer-form.html ---
+    function checkLoginStatus() {
+        const email = localStorage.getItem("loggedInEmail");
+        if (email) {
+            const savedUserData = localStorage.getItem("loggedInCustomer");
+            if (savedUserData) {
+                const userData = JSON.parse(savedUserData);
+                updateNavbar(userData);
+            } else {
+                getUserData(email);
+            }
+        } else {
+            // Not logged in - redirect to login
+            alert("Please log in to apply for a loan.");
+            window.location.href = "../Customer/login.html";
+        }
+    }
+    function getUserData(email) {
+        $.ajax({
+            url: "http://localhost:8089/api/customers/email/" + email,
+            method: "GET",
+            success: function(data) {
+                localStorage.setItem("loggedInCustomer", JSON.stringify(data));
+                updateNavbar(data);
+            },
+            error: function() {
+                alert("Could not load user data");
+            }
+        });
+    }
+    function updateNavbar(userData) {
+        const navbarButtons = document.querySelector('.navbar-buttons');
+        if (navbarButtons) {
+            navbarButtons.innerHTML = '';
+            const profileDropdownWrapper = document.createElement("div");
+            profileDropdownWrapper.className = "profile-dropdown d-inline-block";
+            profileDropdownWrapper.innerHTML = `
+                <button class="btn btn-secondary dropdown-toggle profile-button" type="button" id="profileDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false">
+                    ${userData.name.split(' ')[0]}
+                </button>
+                <ul class="dropdown-menu" id="profileDropdown" aria-labelledby="profileDropdownBtn">
+                    <li><a class="dropdown-item" href="../Customer/profile.html">Profile</a></li>
+                    <li><a class="dropdown-item" href="#" id="logoutLink">Logout</a></li>
+                </ul>
+            `;
+            navbarButtons.appendChild(profileDropdownWrapper);
+            // Add logout event
+            const logoutLink = document.getElementById('logoutLink');
+            if (logoutLink) {
+                logoutLink.addEventListener('click', logout);
+            }
+        }
+    }
+    function logout(e) {
+        if (e) e.preventDefault();
+        if (confirm("Are you sure you want to logout?")) {
+            localStorage.removeItem("loggedInCustomer");
+            localStorage.removeItem("loggedInEmail");
+            window.location.href = "../Customer/login.html";
+        }
+    }
+    // --- End navbar logic ---
+
+    $(document).ready(function() {
+        checkLoginStatus();
+        // Handle form submission
+        $('#loanForm').on('submit', function(e) {
+            e.preventDefault();
+            const customer = JSON.parse(localStorage.getItem("loggedInCustomer"));
+            // Collect form data
+            const application = {
+                customerId: customer.customerid,
+                name: $('#customerName').val(),
+                email: $('#email').val(),
+                phone: $('#customerId').val(),
+                loanAmount: parseFloat($('#loanAmount').val()),
+                loanTenure: parseInt($('#loanTenure').val()),
+                productType: "VEHICLE"
+            };
+            // AJAX POST request (adjust endpoint as needed)
+            $.ajax({
+                url: "http://localhost:8089/api/applications/vehicle",
+                method: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(application),
+                success: function() {
+                    alert("Applied successfully! Needs to be approved.");
+                    $('#loanForm')[0].reset();
+                },
+                error: function() {
+                    alert("Failed to apply. Please try again.");
+                }
+            });
+        });
+    });
+
+</script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

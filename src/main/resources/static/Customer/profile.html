@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Customer Profile</title>
+    <!-- Add jQuery for easy API calls -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="../profile.css">
+</head>
+<body>
+<div class="navbar">
+    <h2>Bank Loan System</h2>
+    <div class="navbar-links" id="navbarLinks">
+        <a href="customer-form.html">Home</a>
+        <a href="../LoanProducts/products.html">Products</a>
+        <a href="#">Applications</a>
+        <!-- This will change based on login status -->
+        <a href="login.html" id="loginButton">Login/Register</a>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="container">
+    <h1>Customer Profile</h1>
+
+    <!-- Profile Information Display -->
+    <div class="profile-info" id="profileInfo">
+        <p><strong>Name:</strong> <span id="customerName"></span></p>
+        <p><strong>Email:</strong> <span id="customerEmail"></span></p>
+        <p><strong>Phone:</strong> <span id="customerPhone"></span></p>
+        <p><strong>Address:</strong> <span id="customerAddress"></span></p>
+        <p><strong>KYC Status:</strong> <span id="customerKYC"></span></p>
+
+        <button class="button" onclick="showUpdateForm()">Update Profile</button>
+        <div>
+            <a href="repayment.html"><button class="button">Repay Amount</button></a>
+
+        </div>
+    </div>
+
+    <!-- Update Form (Hidden by default) -->
+    <div class="update-form" id="updateForm">
+        <h3>Update Your Information</h3>
+        <form id="profileForm">
+            <input type="hidden" id="customerId">
+
+            <div class="form-group">
+                <label>Name:</label>
+                <input type="text" id="name" required>
+            </div>
+
+            <div class="form-group">
+                <label>Email:</label>
+                <input type="email" id="email" required>
+            </div>
+
+            <div class="form-group">
+                <label>Phone:</label>
+                <input type="text" id="phone" required>
+            </div>
+
+            <div class="form-group">
+                <label>Address:</label>
+                <textarea id="address" rows="3" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>KYC Status:</label>
+                <select id="kycStatus" required>
+                    <option value="PENDING">PENDING</option>
+                    <option value="VERIFIED">VERIFIED</option>
+                </select>
+            </div>
+
+            <button type="submit" class="button">Save Changes</button>
+            <button type="button" class="button" onclick="hideUpdateForm()">Cancel</button>
+        </form>
+    </div>
+</div>
+
+
+<!-- Loan Application Status -->
+<div class="loan-status" id="loanStatusSection">
+    <h2>Loan Application Status</h2>
+    <table id="loanStatusTable">
+        <thead>
+        <tr>
+            <th>Application ID</th>
+            <th>Loan Type</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Submitted On</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Rows will be injected here -->
+        </tbody>
+    </table>
+</div>
+
+
+
+<script>
+    // Simple function to check if user is logged in (optional for homepage)
+    function checkLoginStatus() {
+        const email = localStorage.getItem("loggedInEmail");
+
+        if (email) {
+            // User is logged in - try to get their data
+            const savedUserData = localStorage.getItem("loggedInCustomer");
+
+            if (savedUserData) {
+                // Use saved data
+                const userData = JSON.parse(savedUserData);
+                updateNavbar(userData);
+                // Also show profile info if present
+                getUserData(email);
+            } else {
+                // Get fresh data from server
+                getUserData(email);
+            }
+        } else {
+            // Not logged in - redirect to login
+            alert("Please login first!");
+            window.location.href = "login.html";
+        }
+    }
+
+    // Get user data from server
+    function getUserData(email) {
+        $.ajax({
+            url: "http://localhost:8089/api/customers/email/" + email,
+            method: "GET",
+            success: function(data) {
+                // Save user data
+                localStorage.setItem("loggedInCustomer", JSON.stringify(data));
+                // Show user data on page
+                displayUserData(data);
+                // Update navbar to show user's name
+                updateNavbar(data);
+                fetchLoanApplications(email);
+            },
+            error: function() {
+                alert("Error loading profile data");
+            }
+        });
+    }
+
+    // Display user data on the page
+    function displayUserData(data) {
+        document.getElementById("customerName").textContent = data.name;
+        document.getElementById("customerEmail").textContent = data.email;
+        document.getElementById("customerPhone").textContent = data.phone;
+        document.getElementById("customerAddress").textContent = data.address;
+        document.getElementById("customerKYC").textContent = data.kycStatus;
+
+        // Fill the update form with current data
+        document.getElementById("customerId").value = data.customerid;
+        document.getElementById("name").value = data.name;
+        document.getElementById("email").value = data.email;
+        document.getElementById("phone").value = data.phone;
+        document.getElementById("address").value = data.address;
+        document.getElementById("kycStatus").value = data.kycStatus;
+    }
+
+    // Update navbar to show user's name instead of login button
+    function updateNavbar(userData) {
+        const loginButton = document.getElementById("loginButton");
+        const navbarLinks = document.getElementById("navbarLinks");
+        // Remove any existing profile dropdown
+        const existingDropdown = document.querySelector('.profile-dropdown');
+        if (existingDropdown) {
+            existingDropdown.remove();
+        }
+        // Create the profile dropdown wrapper and its contents
+        const profileDropdownWrapper = document.createElement("div");
+        profileDropdownWrapper.className = "profile-dropdown";
+        profileDropdownWrapper.innerHTML = `
+            <button class="profile-button">
+                ${userData.name.split(' ')[0]}
+            </button>
+            <div class="dropdown-menu" id="profileDropdown">
+                <a href="profile.html" class="dropdown-item">View Profile</a>
+                <a href="#" class="dropdown-item" id="logoutLink">Logout</a>
+            </div>
+        `;
+        // If loginButton exists, replace it. Otherwise, append to navbarLinks
+        if (loginButton) {
+            loginButton.replaceWith(profileDropdownWrapper);
+        } else if (navbarLinks) {
+            navbarLinks.appendChild(profileDropdownWrapper);
+        }
+        // Add event listeners to the new elements
+        const profileButton = profileDropdownWrapper.querySelector('.profile-button');
+        if (profileButton) {
+            profileButton.addEventListener('click', toggleDropdown);
+        }
+        const logoutLink = profileDropdownWrapper.querySelector('#logoutLink');
+        if (logoutLink) {
+            logoutLink.addEventListener('click', logout);
+        }
+    }
+
+    // Toggle dropdown menu
+    function toggleDropdown() {
+        const dropdown = document.getElementById("profileDropdown");
+        if (dropdown) {
+            dropdown.classList.toggle("show");
+        }
+    }
+
+    // Close dropdown when clicking outside
+    window.onclick = function(event) {
+        if (!event.target.matches('.profile-button')) {
+            const dropdown = document.getElementById("profileDropdown");
+            if (dropdown && dropdown.classList.contains('show')) {
+                dropdown.classList.remove('show');
+            }
+        }
+    }
+
+    // Logout function
+    function logout() {
+        if (confirm("Are you sure you want to logout?")) {
+            localStorage.removeItem("loggedInEmail");
+            localStorage.removeItem("loggedInCustomer");
+            window.location.href = "login.html";
+        }
+    }
+
+    // Show update form
+    function showUpdateForm() {
+        document.getElementById("updateForm").style.display = "block";
+    }
+
+    // Hide update form
+    function hideUpdateForm() {
+        document.getElementById("updateForm").style.display = "none";
+    }
+
+    // Handle form submission
+    document.getElementById("profileForm").addEventListener("submit", function(e) {
+        e.preventDefault();
+
+        const updatedData = {
+            customerid: document.getElementById("customerId").value,
+            name: document.getElementById("name").value,
+            email: document.getElementById("email").value,
+            phone: document.getElementById("phone").value,
+            address: document.getElementById("address").value,
+            kycStatus: document.getElementById("kycStatus").value
+        };
+
+        // Send update to server
+        $.ajax({
+            url: "http://localhost:8089/api/customers/" + updatedData.customerid,
+            method: "PUT",
+            contentType: "application/json",
+            data: JSON.stringify(updatedData),
+            success: function() {
+                alert("Profile updated successfully!");
+                location.reload(); // Refresh page to show new data
+            },
+            error: function() {
+                alert("Error updating profile");
+            }
+        });
+    });
+
+    function fetchLoanApplications(email) {
+    $.ajax({
+        url: `http://localhost:8089/api/loans/status/${encodeURIComponent(email)}`,
+        method: "GET",
+        success: function(applications) {
+            const tableBody = document.querySelector("#loanStatusTable tbody");
+            tableBody.innerHTML = ""; // Clear previous rows
+
+            if (applications.length === 0) {
+                tableBody.innerHTML = "<tr><td colspan='5'>No loan applications found.</td></tr>";
+                return;
+            }
+
+            applications.forEach(app => {
+                const row = document.createElement("tr");
+                let statusClass = '';
+    if (app.approvalStatus === 'APPROVED') {
+        statusClass = 'status-approved';
+    } else if (app.approvalStatus === 'REJECTED') {
+        statusClass = 'status-rejected';
+    } else if (app.approvalStatus === 'PENDING') {
+        statusClass = 'status-pending';
+    }
+
+    row.innerHTML = `
+        <td>${app.applicationId}</td>
+        <td>${app.loanProductId.productName}</td>
+        <td>${app.loanAmount}</td>
+        <td class="${statusClass}">${app.approvalStatus}</td>
+        <td>${new Date(app.applicationDate).toLocaleDateString()}</td>
+    `;
+                tableBody.appendChild(row);
+            });
+        },
+        error: function() {
+            alert("Failed to load loan application status.");
+        }
+    });
+}
+
+
+    // Start the page by checking login status
+    $(document).ready(function() {
+        checkLoginStatus();
+    });
+</script>
+</body>
+</html>

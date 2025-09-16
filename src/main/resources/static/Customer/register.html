@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bank Loan Management</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="../register.css">
+</head>
+<body>
+
+
+<div class="form-container">
+    <h3>Bank Loan Management System</h3>
+    <img src="../images/logo.jpg" class="side-img" alt="Logo">
+    <h3>Register</h3>
+
+    <form id="registerForm" action="http://localhost:8089/api/customers/register" method="POST">
+        <label>Name:</label>
+        <input type="text" name="name" id="name" required pattern="[A-Za-z\s]{2,}" title="Letters only, at least 2 characters" />
+
+        <label>Email:</label>
+        <input type="email" name="email" id="email" required pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$" title="Enter a valid email address" />
+
+        <label>Phone:</label>
+        <input type="tel" name="phone" id="phone" required pattern="\d{10}" title="Enter a 10-digit phone number" style="width: 100%;" />
+
+        <label>Password:</label>
+        <input type="password" name="password" id="password" required pattern="^[A-Z][A-Za-z\d]{5,}$" title="Must start with a capital letter and be at least 6 characters" />
+
+        <label>Address:</label>
+        <textarea name="address" id="address" required></textarea>
+
+        <button type="submit">Register</button>
+        <p id="registerResult"></p>
+    </form>
+</div>
+
+<script>
+    $("#registerForm").submit(function (e) {
+      e.preventDefault();
+
+      $.ajax({
+        url: "http://localhost:8089/api/customers/register",
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({
+          name: $("#name").val(),
+          email: $("#email").val(),
+          phone: $("#phone").val(),
+          password: $("#password").val(),
+          address: $("#address").val()
+        }),
+        success: function () {
+          $("#registerResult").css("color", "green").text("Registration successful! Redirecting...");
+          setTimeout(() => window.location.href = "login.html", 1500);
+        },
+        error: function () {
+          $("#registerResult").css("color", "red").text("Registration failed. Please try again.");
+        }
+      });
+    });
+</script>
+
+</body>
+</html>

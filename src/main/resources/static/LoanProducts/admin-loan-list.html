@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Loan Products</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="style1.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- Loan Product List -->//need to soft code
+<section class="apply-section py-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="mb-0">Loan Products List</h2>
+            <a href="admin-add-loan.html" class="btn btn-success">+ Add New Loan</a>
+        </div>
+
+        <div class="table-responsive shadow rounded">
+            <table class="table table-striped align-middle">
+                <thead class="table-dark">
+                <tr>
+                    <th>Product ID</th>
+                    <th>Loan Name</th>
+                    <th>Interest Rate (%)</th>
+                    <th>Min Amount (₹)</th>
+                    <th>Max Amount (₹)</th>
+                    <th>Max Tenure (Months)</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- Sample Data Row -->
+                <tr>
+                    <td>LP101</td>
+                    <td>Personal Loan</td>
+                    <td>12.5</td>
+                    <td>50,000</td>
+                    <td>5,00,000</td>
+                    <td>36</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary">Edit</button>
+                        <button class="btn btn-sm btn-danger">Delete</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>LP102</td>
+                    <td>Home Loan</td>
+                    <td>8.75</td>
+                    <td>2,00,000</td>
+                    <td>50,00,000</td>
+                    <td>240</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary">Edit</button>
+                        <button class="btn btn-sm btn-danger">Delete</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>LP103</td>
+                    <td>Car Loan</td>
+                    <td>9.25</td>
+                    <td>1,00,000</td>
+                    <td>10,00,000</td>
+                    <td>60</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary">Edit</button>
+                        <button class="btn btn-sm btn-danger">Delete</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

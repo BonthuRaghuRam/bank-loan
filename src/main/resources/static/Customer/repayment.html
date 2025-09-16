@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Repay Amount</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="../profile.css">
+</head>
+<body>
+<div class="navbar">
+    <h2>Bank Loan System</h2>
+    <div class="navbar-links" id="navbarLinks">
+        <a href="../Customer/customer-form.html">Home</a>
+    </div>
+</div>
+
+<div class="container">
+    <h1>Repay Amount</h1>
+    <div class="repay-info" id="repayInfo">
+        <button class="button" id="pay" onclick="payNow()">Pay Now</button>
+        <button class="button" id="date" onclick="getDueDate()">Due Date</button>
+<!--        <button class="button" id="amount" onclick="getOutstandingAmount()">Repay Amount</button>-->
+    </div>
+</div>
+
+<script>
+    function checkLoginStatus() {
+        const email = localStorage.getItem("loggedInEmail");
+        if (!email) {
+            alert("Please login first!");
+            window.location.href = "login.html";
+        }
+    }
+
+  // Fetch applicationId using email and then set up button click handlers
+function fetchAndInitialize() {
+    const email = localStorage.getItem("loggedInEmail");
+    if (!email) {
+        alert("Email not found in localStorage. Please log in.");
+        return;
+    }
+
+    $.ajax({
+        url: `http://localhost:8089/api/repayment/email/${email}`,
+        method: "GET",
+        success: function(loanApplications) {
+            if (loanApplications && loanApplications.length > 0) {
+                const applicationId = loanApplications[0].applicationId;
+                localStorage.setItem("applicationId", applicationId);
+                alert("Application ID set: " + applicationId);
+
+                // Now that the ID is set, initialize the button click handlers
+                initializeButtons();
+            } else {
+                alert("No loan applications found for this customer.");
+            }
+        },
+        error: function(xhr) {
+            alert("Failed to fetch loan applications: " + xhr.responseText);
+        }
+    });
+}
+
+// Function to attach event listeners to buttons
+function initializeButtons() {
+    $("#pay").click(function(e) {
+        e.preventDefault();
+        payNow();
+    });
+
+    $("#date").click(function(e) {
+        e.preventDefault();
+        getDueDate();
+    });
+
+    $("#amount").click(function(e) {
+        e.preventDefault();
+        getOutstandingAmount();
+    });
+}
+
+function payNow() {
+    const applicationId = localStorage.getItem("applicationId");
+    if (!applicationId) {
+        alert("No application ID found. Please refresh or try again.");
+        return;
+    }
+    $.ajax({
+        url: `http://localhost:8089/api/repayment/pay/${applicationId}`,
+        method: "PUT",
+        success: function(response) {
+            alert("payment completed");
+        },
+        error: function(xhr) {
+            alert("Payment failed: " + xhr.responseText);
+        }
+    });
+}
+
+function getDueDate() {
+    const applicationId = localStorage.getItem("applicationId");
+    if (!applicationId) {
+        alert("No application ID found. Please refresh or try again.");
+        return;
+    }
+    $.ajax({
+        url: `http://localhost:8089/api/repayment/date/${applicationId}`,
+        method: "GET",
+        success: function(data) {
+            alert("Due Date: " + data.dueDate);
+        },
+        error: function(xhr) {
+            alert("Failed to fetch due date: " + xhr.responseText);
+        }
+    });
+}
+
+function getOutstandingAmount() {
+    const applicationId = localStorage.getItem("applicationId");
+    if (!applicationId) {
+        alert("No application ID found. Please refresh or try again.");
+        return;
+    }
+    $.ajax({
+        url: `http://localhost:8089/api/repayment/outstanding/${applicationId}`,
+        method: "GET",
+        success: function(data) {
+            alert("Outstanding Amount: " + data.outstandingAmount);
+        },
+        error: function(xhr) {
+            alert("Failed to fetch amount: " + xhr.responseText);
+        }
+    });
+}
+
+// Start the page by checking login status and then fetching the application ID
+$(document).ready(function() {
+    checkLoginStatus();
+    fetchAndInitialize();
+});
+</script>
+</body>
+</html>

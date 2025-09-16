@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Update Loan Product</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="style1.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- Update Loan Product Form -->
+<section class="apply-section py-5">
+    <div class="container">
+        <h2 class="text-center mb-4">Update Loan Product</h2>
+
+        <form class="apply-form shadow p-4 rounded bg-white">
+            <!-- Loan Product ID (readonly) need to fetch from backened -->
+            <div class="mb-3">
+                <label class="form-label">Loan Product ID</label>
+                <input type="text" class="form-control" value="LP101" readonly>
+            </div>
+
+            <!-- Loan Name -->//need to soft code
+            <div class="mb-3">
+                <label class="form-label">Loan Name</label>
+                <input type="text" class="form-control" value="Personal Loan">
+            </div>
+
+            <!-- Interest Rate -->
+            <div class="mb-3">
+                <label class="form-label">Interest Rate (%)</label>
+                <input type="number" step="0.01" class="form-control" value="12.5">
+            </div>
+
+            <!-- Min Amount -->
+            <div class="mb-3">
+                <label class="form-label">Minimum Loan Amount (₹)</label>
+                <input type="number" class="form-control" value="50000">
+            </div>
+
+            <!-- Max Amount -->
+            <div class="mb-3">
+                <label class="form-label">Maximum Loan Amount (₹)</label>
+                <input type="number" class="form-control" value="500000">
+            </div>
+
+            <!-- Max Tenure -->
+            <div class="mb-3">
+                <label class="form-label">Maximum Tenure (Months)</label>
+                <input type="number" class="form-control" value="36">
+            </div>
+
+            <!-- Update Button -->
+            <button type="submit" class="apply-btn">Update Loan Product</button>
+        </form>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="footer-container">
+        <div class="footer-section">
+            <h4>About Us</h4>
+            <p>We provide secure and efficient loan services tailored to meet customer needs.</p>
+        </div>
+        <div class="footer-section">
+            <h4>Contact Us</h4>
+            <p>Email: support@loanbank.com</p>
+            <p>Phone: +91-9876543210</p>
+        </div>
+    </div>
+    <div class="footer-bottom">&copy; 2025 All rights reserved.</div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
